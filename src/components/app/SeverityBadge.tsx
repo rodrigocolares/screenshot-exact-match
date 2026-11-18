@@ -6,7 +6,7 @@ export function SeverityBadge({ severity, className }: { severity: string; class
     <span
       className={cn(
         "inline-flex items-center gap-1.5 rounded border px-1.5 py-0.5 font-mono text-[11px] font-medium uppercase tracking-wide",
-        SEVERITY_CLASS[severity] ?? SEVERITY_CLASS.INFO,
+        SEVERITY_CLASS[severity] ?? SEVERITY_CLASS["INFO"],
         className,
       )}
     >

@@ -50,8 +50,8 @@ function Upload() {
   async function onFile(f: File | undefined) {
     setResult(null);
     if (!f) return;
-    if (f.size > MAX) return toast.error("Arquivo excede 5 MB. Divida o arquivo ou use a API de ingestão.");
-    if (/\.(gz|zip|evtx)$/i.test(f.name)) return toast.error("Arquivos .gz, .zip e .evtx ainda não são suportados no upload. Extraia/converta para texto (ex.: Get-WinEvent | ConvertTo-Json).");
+    if (f.size > MAX) { toast.error("Arquivo excede 5 MB. Divida o arquivo ou use a API de ingestão."); return; }
+    if (/\.(gz|zip|evtx)$/i.test(f.name)) { toast.error("Arquivos .gz, .zip e .evtx ainda não são suportados no upload. Extraia/converta para texto (ex.: Get-WinEvent | ConvertTo-Json)."); return; }
     setFile({ name: f.name, content: await f.text() });
   }
 

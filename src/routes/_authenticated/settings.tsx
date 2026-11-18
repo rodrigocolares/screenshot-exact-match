@@ -63,7 +63,7 @@ function Settings() {
       ? await supabase.rpc("load_demo_data", { _org: org!.orgId })
       : await supabase.rpc("clear_demo_data", { _org: org!.orgId });
     setBusy(null);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(load ? `${data} eventos fictícios carregados` : "Dados de demonstração removidos");
     qc.invalidateQueries();
   }

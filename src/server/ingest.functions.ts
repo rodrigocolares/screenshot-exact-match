@@ -61,7 +61,7 @@ export const ingestLogFile = createServerFn({ method: "POST" })
         job_id: job.id,
         timestamp: e.timestamp,
         operating_system: server?.os ?? null,
-        hostname: server?.hostname ?? (typeof e.attributes.syslog_host === "string" ? e.attributes.syslog_host : null),
+        hostname: server?.hostname ?? (typeof e.attributes["syslog_host"] === "string" ? e.attributes["syslog_host"] : null),
         source_type: e.source_type,
         service_name: e.service_name,
         environment: server?.environment ?? null,

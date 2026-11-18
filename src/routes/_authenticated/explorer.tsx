@@ -88,7 +88,7 @@ function Explorer() {
 
   async function exportAs(fmt: "csv" | "json") {
     const { data, error } = await buildQuery(org!.orgId, s, "*", false).order("timestamp", { ascending: false }).limit(5000);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     const rows = (data ?? []) as unknown as LogEvent[];
     let blob: Blob;
     if (fmt === "json") blob = new Blob([JSON.stringify(rows, null, 2)], { type: "application/json" });
@@ -208,7 +208,7 @@ function Explorer() {
   );
 }
 
-function Sel({ value, onChange, placeholder, options }: { value?: string; onChange: (v?: string) => void; placeholder: string; options: [string, string][] }) {
+function Sel({ value, onChange, placeholder, options }: { value?: string | undefined; onChange: (v?: string) => void; placeholder: string; options: [string, string][] }) {
   return (
     <Select value={value ?? "__all"} onValueChange={(v) => onChange(v === "__all" ? undefined : v)}>
       <SelectTrigger className="w-full"><SelectValue placeholder={placeholder} /></SelectTrigger>
@@ -220,7 +220,7 @@ function Sel({ value, onChange, placeholder, options }: { value?: string; onChan
   );
 }
 
-function TextFilter({ value, onChange, placeholder }: { value?: string; onChange: (v?: string) => void; placeholder: string }) {
+function TextFilter({ value, onChange, placeholder }: { value?: string | undefined; onChange: (v?: string) => void; placeholder: string }) {
   const [v, setV] = useState(value ?? "");
   useEffect(() => setV(value ?? ""), [value]);
   return <Input value={v} placeholder={placeholder} onChange={(e) => setV(e.target.value)} onBlur={() => onChange(v || undefined)} onKeyDown={(e) => e.key === "Enter" && onChange(v || undefined)} />;

@@ -85,7 +85,7 @@ function NewServer() {
       org_id: org!.orgId, hostname: f.hostname.trim(), os: f.os, os_version: f.os_version || null, address: f.address || null,
       environment: f.environment, owner: f.owner || null, services: list(f.services), applications: list(f.applications), tags: list(f.tags),
     });
-    if (error) return toast.error(error.code === "23505" ? "Já existe um servidor com esse hostname" : error.message);
+    if (error) { toast.error(error.code === "23505" ? "Já existe um servidor com esse hostname" : error.message); return; }
     toast.success("Servidor cadastrado");
     qc.invalidateQueries({ queryKey: ["servers"] });
     setOpen(false);

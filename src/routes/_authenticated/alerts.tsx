@@ -48,7 +48,7 @@ function Alerts() {
   }
   async function evaluate() {
     const { data, error } = await supabase.rpc("evaluate_alerts", { _org: org!.orgId });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(data ? `${data} novo(s) alerta(s)` : "Nenhum novo alerta");
     qc.invalidateQueries({ queryKey: ["alert_occ"] });
   }
@@ -112,7 +112,7 @@ function NewRule() {
       org_id: org!.orgId, name: f.name, min_severity: f.min_severity, source_type: f.source_type === "any" ? null : f.source_type,
       message_contains: f.message_contains || null, threshold: f.threshold, window_minutes: f.window_minutes, alert_severity: f.alert_severity,
     });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     qc.invalidateQueries({ queryKey: ["alert_rules"] });
     setOpen(false);
   }

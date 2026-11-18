@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function StatCard({ label, value, icon: Icon, tone = "default", hint }: { label: string; value: string | number; icon: LucideIcon; tone?: "default" | "error" | "critical" | "warn" | "success"; hint?: string }) {
+export function StatCard({ label, value, icon: Icon, tone = "default", hint }: { label: string; value: string | number; icon: LucideIcon; tone?: "default" | "error" | "critical" | "warn" | "success"; hint?: string | undefined }) {
   const toneCls = { default: "text-primary", error: "text-sev-error", critical: "text-sev-critical", warn: "text-sev-warn", success: "text-success" }[tone];
   return (
     <div className="rounded-lg border bg-card p-4">
