@@ -30,6 +30,7 @@ use the editor.
 <!-- LOVABLE:END -->
 
 ## Project rules
+- Explicitly track the parser, parser tests, and metadata in `src/lib/logs/` despite the managed `logs` ignore pattern, so clean builds include these source dependencies.
 - Server functions live in `src/lib/api/*.functions.ts` (not `src/server/`, which import-protection blocks from client code).
 - Log parsing is pure TS in `src/lib/logs/parsers.ts`, run server-side on ingest and client-side only for previews; missing source fields stay null. Covered by `parsers.test.ts`.
 - Tenant isolation: every app table has `org_id` with RLS via `is_org_member` / `can_write_org`; aggregates go through SECURITY DEFINER RPCs that check membership.
