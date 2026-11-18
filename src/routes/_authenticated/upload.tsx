@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SeverityBadge } from "@/components/app/SeverityBadge";
-import { ingestLogFile } from "@/server/ingest.functions";
+import { ingestLogFile } from "@/lib/api/ingest.functions";
 import { LOG_TYPES, parseLogs, type LogType } from "@/lib/logs/parsers";
 import { fmtDate, fmtNum, SOURCE_LABEL } from "@/lib/logs/meta";
 

@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { SeverityBadge } from "./SeverityBadge";
-import { investigateEvent } from "@/server/ai.functions";
+import { investigateEvent } from "@/lib/api/ai.functions";
 import { fmtDate, SOURCE_LABEL } from "@/lib/logs/meta";
 import type { Tables } from "@/integrations/supabase/types";
 
