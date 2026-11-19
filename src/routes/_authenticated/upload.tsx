@@ -6,6 +6,7 @@ import { FileUp, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useOrg } from "@/lib/org";
+import { refreshUploadHistory } from "@/lib/upload-history";
 import { PageHeader } from "@/components/app/AppShell";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -37,12 +38,22 @@ function Upload() {
   const { data: servers } = useQuery({
     queryKey: ["servers", org?.orgId, os],
     enabled: !!org,
-    queryFn: async () => (await supabase.from("servers").select("id, hostname").eq("org_id", org!.orgId).eq("os", os).order("hostname")).data ?? [],
+    queryFn: async () => {
+      if (!org) return [];
+      const { data, error } = await supabase.from("servers").select("id, hostname").eq("org_id", org.orgId).eq("os", os).order("hostname");
+      if (error) throw error;
+      return data ?? [];
+    },
   });
   const { data: jobs } = useQuery({
     queryKey: ["jobs", org?.orgId],
     enabled: !!org,
-    queryFn: async () => (await supabase.from("ingestion_jobs").select("*").eq("org_id", org!.orgId).order("created_at", { ascending: false }).limit(20)).data ?? [],
+    queryFn: async () => {
+      if (!org) return [];
+      const { data, error } = await supabase.from("ingestion_jobs").select("*").eq("org_id", org.orgId).order("created_at", { ascending: false }).limit(20);
+      if (error) throw error;
+      return data ?? [];
+    },
   });
 
   const preview = useMemo(() => (file ? parseLogs(file.content.slice(0, 60000), type) : null), [file, type]);
@@ -62,7 +73,7 @@ function Upload() {
       const r = await ingest({ data: { orgId: org.orgId, serverId: serverId === "none" ? null : serverId, logType: type, fileName: file.name, content: file.content } });
       setResult(r);
       toast.success(`${fmtNum(r.imported)} eventos importados`);
-      qc.invalidateQueries();
+      await refreshUploadHistory(qc, org.orgId);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Falha na importação");
     } finally {
@@ -95,7 +106,7 @@ function Upload() {
             <span className="text-xs text-muted-foreground">Máx. 5 MB</span>
             <input type="file" accept={ACCEPT} className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
           </label>
-          <Button className="w-full" disabled={!file || busy} onClick={submit}>{busy ? <Loader2 className="animate-spin" /> : <FileUp />} Importar</Button>
+          <Button className="w-full" disabled={!file || !org || busy} onClick={submit}>{busy ? <Loader2 className="animate-spin" /> : <FileUp />} Importar</Button>
           {result && (
             <div className="rounded border bg-muted/40 p-3 text-xs">
               <div className="mb-1 font-semibold">Resultado ({SOURCE_LABEL[result.detected] ?? result.detected})</div>

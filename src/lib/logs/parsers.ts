@@ -595,7 +595,8 @@ export function detectLogType(sample: string[]): LogType {
   if (VSFTPD.test(first)) return "vsftpd";
   if (NGINX_ERR.test(first)) return "nginx_error";
   if (APACHE_ERR.test(first)) return "apache_error";
-  if (CLF.test(first) || /^\S+:\d+ /.test(first)) {
+  const vhostAccess = first.match(/^\S+:\d+ (.*)$/);
+  if (CLF.test(first) || (vhostAccess && CLF.test(vhostAccess[1]))) {
     return /\b(rt|urt|uct|us|upstream_\w+)=/.test(joined) || /nginx/i.test(joined) ? "nginx_access" : "apache_access";
   }
   if (SYSLOG.test(first) || SYSLOG_ISO.test(first)) {

@@ -80,3 +80,72 @@ describe("Linux auth", () => {
     expect(r.events[0].client_ip).toBe("203.0.113.99");
   });
 });
+
+describe("Additional formats and edge cases", () => {
+  it("parses IIS FTP failures without HTTP fields", () => {
+    const r = parseLogs(`#Software: Microsoft Internet Information Services FTP\n#Fields: date time c-ip cs-username cs-method cs-uri-stem sc-status\n2026-11-18 20:00:00 203.0.113.10 alice PASS - 530`);
+    expect(r.detected).toBe("iis_ftp");
+    expect(r.events[0].event_category).toBe("auth_failure");
+    expect(r.events[0].http_status).toBeNull();
+    expect(r.events[0].attributes.ftp_status).toBe(530);
+  });
+  it("rejects W3C data without its header", () => {
+    expect(parseLogs("2026-11-18 20:00:00 GET / 200", "iis_access").rejected[0].line).toBe(1);
+  });
+  it("parses Apache errors", () => {
+    const r = parseLogs('[Wed Nov 18 20:00:00.123456 2026] [core:error] [pid 123] [client 203.0.113.8:5678] AH00126: access denied');
+    expect(r.detected).toBe("apache_error");
+    expect(r.events[0].client_ip).toBe("203.0.113.8");
+    expect(r.events[0].event_category).toBe("access_denied");
+  });
+  it("keeps absent common-access fields null", () => {
+    const r = parseLogs('203.0.113.9 - - [18/Nov/2026:20:00:00 +0000] "GET / HTTP/1.1" 200 10');
+    expect(r.events[0].user_agent).toBeNull();
+    expect(r.events[0].response_time).toBeNull();
+    expect(r.events[0].username).toBeNull();
+  });
+  it("parses vsftpd IPv4-mapped addresses", () => {
+    const r = parseLogs('Wed Nov 18 20:00:00 2026 [pid 1234] [alice] FAIL LOGIN: Client "::ffff:203.0.113.9"');
+    expect(r.detected).toBe("vsftpd");
+    expect(r.events[0].client_ip).toBe("203.0.113.9");
+    expect(r.events[0].severity).toBe("WARN");
+  });
+  it("parses ISO syslog SSH success", () => {
+    const r = parseLogs('2026-11-18T20:00:00-03:00 web01 sshd[99]: Accepted publickey for alice from 203.0.113.4 port 22 ssh2');
+    expect(r.events[0].timestamp).toBe("2026-11-18T23:00:00.000Z");
+    expect(r.events[0].event_category).toBe("auth_success");
+  });
+  it("handles syslog year rollover", () => {
+    const r = parseLogs("Dec 31 23:59:59 web01 kernel: ok", "syslog", new Date("2027-01-01T01:00:00Z"));
+    expect(r.events[0].timestamp).toBe("2026-12-31T23:59:59.000Z");
+  });
+  it("parses JSON epoch seconds with absent fields null", () => {
+    const r = parseLogs('{"timestamp":1795032000,"message":"ok","level":"warning"}');
+    expect(r.events[0].timestamp).toBe("2026-11-18T20:00:00.000Z");
+    expect(r.events[0].severity).toBe("WARN");
+    expect(r.events[0].client_ip).toBeNull();
+    expect(r.events[0].service_name).toBeNull();
+  });
+  it("rejects malformed JSON and missing dates independently", () => {
+    const r = parseLogs('{broken}\n{"message":"no time"}\n{"timestamp":"2026-11-18T20:00:00Z","message":"valid"}', "json");
+    expect(r.rejected.map((row) => row.line)).toEqual([1, 2]);
+    expect(r.events).toHaveLength(1);
+    expect(r.total).toBe(3);
+  });
+  it("handles BOM, CRLF and blanks", () => {
+    const r = parseLogs('\uFEFF{"timestamp":"2026-11-18T20:00:00Z","message":"ok"}\r\n\r\n');
+    expect(r.detected).toBe("json");
+    expect(r.total).toBe(1);
+    expect(r.rejected).toEqual([]);
+  });
+  it("rejects undated generic text", () => {
+    const r = parseLogs("no date\n2026-11-18 20:00:00 WARN disk", "generic");
+    expect(r.rejected[0].line).toBe(1);
+    expect(r.events[0].severity).toBe("WARN");
+  });
+  it("rejects orphan Java continuation lines", () => {
+    const r = parseLogs("at app.Main.run(Main.java:10)\n2026-11-18 20:00:00 INFO app.Main - ok", "java_app");
+    expect(r.rejected[0].line).toBe(1);
+    expect(r.events).toHaveLength(1);
+  });
+});
