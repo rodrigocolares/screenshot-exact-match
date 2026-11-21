@@ -63,8 +63,9 @@ export async function handleIngest(request: Request, endpoint: string): Promise<
       const { data: s } = await supabaseAdmin.from("servers").select("id, hostname, os, environment").eq("org_id", orgId).ilike("hostname", p.hostname).limit(1).maybeSingle();
       server = s ?? null;
       if (!server) {
+        if (!p.operating_system) { await audit(keyId, orgId, endpoint, 400, 0, "operating_system_required"); return json(400, { error: "operating_system_required", detail: "Informe operating_system (windows|linux) para cadastrar um servidor novo." }); }
         const { data: created, error } = await supabaseAdmin.from("servers")
-          .insert({ org_id: orgId, hostname: p.hostname, os: p.operating_system ?? "other", environment: p.environment ?? "production", agent_status: "online" })
+          .insert({ org_id: orgId, hostname: p.hostname, os: p.operating_system, environment: p.environment ?? "production", agent_status: "online" })
           .select("id, hostname, os, environment").single();
         if (error || !created) throw new Error(error?.message ?? "server create failed");
         server = created;

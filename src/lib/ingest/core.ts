@@ -65,7 +65,7 @@ export const eventSchema = z
 export const batchSchema = z.object({
   batch_id: safeText(200).optional(),
   hostname: z.string().min(1).max(255).regex(/^[A-Za-z0-9._-]+$/),
-  operating_system: z.enum(["windows", "linux", "other"]).optional(),
+  operating_system: z.enum(["windows", "linux"]).optional(),
   source_type: z.string().regex(/^[a-z0-9_]{1,40}$/),
   environment: safeText(40).optional(),
   events: z.array(z.unknown()).min(1).max(MAX_EVENTS_PER_BATCH),

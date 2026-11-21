@@ -21,6 +21,9 @@ import { Route as AuthenticatedServersRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedUploadRouteImport } from './routes/_authenticated/upload'
 import { Route as AuthenticatedWindowsRouteImport } from './routes/_authenticated/windows'
+import { Route as ApiV1IngestionHealthRouteImport } from './routes/api/v1/ingestion/health'
+import { Route as ApiV1LogsBatchRouteImport } from './routes/api/v1/logs/batch'
+import { Route as ApiV1LogsIngestRouteImport } from './routes/api/v1/logs/ingest'
 import { Route as ApiPublicV1IngestionHealthRouteImport } from './routes/api/public/v1/ingestion/health'
 import { Route as ApiPublicV1LogsBatchRouteImport } from './routes/api/public/v1/logs/batch'
 import { Route as ApiPublicV1LogsIngestRouteImport } from './routes/api/public/v1/logs/ingest'
@@ -84,6 +87,21 @@ const AuthenticatedWindowsRoute = AuthenticatedWindowsRouteImport.update({
   path: '/windows',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiV1IngestionHealthRoute = ApiV1IngestionHealthRouteImport.update({
+  id: '/api/v1/ingestion/health',
+  path: '/api/v1/ingestion/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1LogsBatchRoute = ApiV1LogsBatchRouteImport.update({
+  id: '/api/v1/logs/batch',
+  path: '/api/v1/logs/batch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1LogsIngestRoute = ApiV1LogsIngestRouteImport.update({
+  id: '/api/v1/logs/ingest',
+  path: '/api/v1/logs/ingest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicV1IngestionHealthRoute =
   ApiPublicV1IngestionHealthRouteImport.update({
     id: '/api/public/v1/ingestion/health',
@@ -113,6 +131,9 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/windows': typeof AuthenticatedWindowsRoute
+  '/api/v1/ingestion/health': typeof ApiV1IngestionHealthRoute
+  '/api/v1/logs/batch': typeof ApiV1LogsBatchRoute
+  '/api/v1/logs/ingest': typeof ApiV1LogsIngestRoute
   '/api/public/v1/ingestion/health': typeof ApiPublicV1IngestionHealthRoute
   '/api/public/v1/logs/batch': typeof ApiPublicV1LogsBatchRoute
   '/api/public/v1/logs/ingest': typeof ApiPublicV1LogsIngestRoute
@@ -129,6 +150,9 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/windows': typeof AuthenticatedWindowsRoute
+  '/api/v1/ingestion/health': typeof ApiV1IngestionHealthRoute
+  '/api/v1/logs/batch': typeof ApiV1LogsBatchRoute
+  '/api/v1/logs/ingest': typeof ApiV1LogsIngestRoute
   '/api/public/v1/ingestion/health': typeof ApiPublicV1IngestionHealthRoute
   '/api/public/v1/logs/batch': typeof ApiPublicV1LogsBatchRoute
   '/api/public/v1/logs/ingest': typeof ApiPublicV1LogsIngestRoute
@@ -147,6 +171,9 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/upload': typeof AuthenticatedUploadRoute
   '/_authenticated/windows': typeof AuthenticatedWindowsRoute
+  '/api/v1/ingestion/health': typeof ApiV1IngestionHealthRoute
+  '/api/v1/logs/batch': typeof ApiV1LogsBatchRoute
+  '/api/v1/logs/ingest': typeof ApiV1LogsIngestRoute
   '/api/public/v1/ingestion/health': typeof ApiPublicV1IngestionHealthRoute
   '/api/public/v1/logs/batch': typeof ApiPublicV1LogsBatchRoute
   '/api/public/v1/logs/ingest': typeof ApiPublicV1LogsIngestRoute
@@ -165,6 +192,9 @@ export interface FileRouteTypes {
     | '/settings'
     | '/upload'
     | '/windows'
+    | '/api/v1/ingestion/health'
+    | '/api/v1/logs/batch'
+    | '/api/v1/logs/ingest'
     | '/api/public/v1/ingestion/health'
     | '/api/public/v1/logs/batch'
     | '/api/public/v1/logs/ingest'
@@ -181,6 +211,9 @@ export interface FileRouteTypes {
     | '/settings'
     | '/upload'
     | '/windows'
+    | '/api/v1/ingestion/health'
+    | '/api/v1/logs/batch'
+    | '/api/v1/logs/ingest'
     | '/api/public/v1/ingestion/health'
     | '/api/public/v1/logs/batch'
     | '/api/public/v1/logs/ingest'
@@ -198,6 +231,9 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/upload'
     | '/_authenticated/windows'
+    | '/api/v1/ingestion/health'
+    | '/api/v1/logs/batch'
+    | '/api/v1/logs/ingest'
     | '/api/public/v1/ingestion/health'
     | '/api/public/v1/logs/batch'
     | '/api/public/v1/logs/ingest'
@@ -207,6 +243,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiV1IngestionHealthRoute: typeof ApiV1IngestionHealthRoute
+  ApiV1LogsBatchRoute: typeof ApiV1LogsBatchRoute
+  ApiV1LogsIngestRoute: typeof ApiV1LogsIngestRoute
   ApiPublicV1IngestionHealthRoute: typeof ApiPublicV1IngestionHealthRoute
   ApiPublicV1LogsBatchRoute: typeof ApiPublicV1LogsBatchRoute
   ApiPublicV1LogsIngestRoute: typeof ApiPublicV1LogsIngestRoute
@@ -298,6 +337,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWindowsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/v1/ingestion/health': {
+      id: '/api/v1/ingestion/health'
+      path: '/api/v1/ingestion/health'
+      fullPath: '/api/v1/ingestion/health'
+      preLoaderRoute: typeof ApiV1IngestionHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/logs/batch': {
+      id: '/api/v1/logs/batch'
+      path: '/api/v1/logs/batch'
+      fullPath: '/api/v1/logs/batch'
+      preLoaderRoute: typeof ApiV1LogsBatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/logs/ingest': {
+      id: '/api/v1/logs/ingest'
+      path: '/api/v1/logs/ingest'
+      fullPath: '/api/v1/logs/ingest'
+      preLoaderRoute: typeof ApiV1LogsIngestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/v1/ingestion/health': {
       id: '/api/public/v1/ingestion/health'
       path: '/api/public/v1/ingestion/health'
@@ -353,6 +413,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiV1IngestionHealthRoute: ApiV1IngestionHealthRoute,
+  ApiV1LogsBatchRoute: ApiV1LogsBatchRoute,
+  ApiV1LogsIngestRoute: ApiV1LogsIngestRoute,
   ApiPublicV1IngestionHealthRoute: ApiPublicV1IngestionHealthRoute,
   ApiPublicV1LogsBatchRoute: ApiPublicV1LogsBatchRoute,
   ApiPublicV1LogsIngestRoute: ApiPublicV1LogsIngestRoute,

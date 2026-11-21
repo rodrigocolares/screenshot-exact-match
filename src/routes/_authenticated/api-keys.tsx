@@ -41,6 +41,19 @@ function ApiKeys() {
   const [secret, setSecret] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
+  const [testResult, setTestResult] = useState<string | null>(null);
+
+  async function sendTest(key: string) {
+    setTestResult("Enviando…");
+    const host = servers?.find((s) => s.id === form.serverId)?.hostname ?? "LOGSENTINEL-TESTE";
+    const res = await fetch("/api/v1/logs/ingest", {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
+      body: JSON.stringify({ hostname: host, operating_system: "linux", source_type: "generic", events: [{ external_id: `teste-${Date.now()}`, timestamp: new Date().toISOString(), severity: "INFO", message: "Evento de teste da API de ingestão LogSentinel" }] }),
+    });
+    setTestResult(`HTTP ${res.status} — ${await res.text()}`);
+    qc.invalidateQueries({ queryKey: ["api-keys", org!.orgId] });
+  }
 
   const { data: keys } = useQuery({
     queryKey: ["api-keys", org?.orgId], enabled: !!org && isAdmin,
@@ -58,7 +71,7 @@ function ApiKeys() {
   function openNew(from?: KeyRow) {
     setRotate(from ?? null);
     setForm({ name: from ? `${from.name} (rotacionada)` : "", description: from?.description ?? "", serverId: from?.server_id ?? "", days: "90", rate: String(from?.rate_limit_per_minute ?? 120) });
-    setSecret(null); setOpen(true);
+    setSecret(null); setTestResult(null); setOpen(true);
   }
 
   async function submit() {
@@ -84,7 +97,7 @@ function ApiKeys() {
   }
 
   const host = (id: string | null) => servers?.find((s) => s.id === id)?.hostname ?? "Qualquer servidor";
-  const endpoint = typeof window !== "undefined" ? `${window.location.origin}/api/public/v1/logs/ingest` : "/api/public/v1/logs/ingest";
+  const endpoint = typeof window !== "undefined" ? `${window.location.origin}/api/v1/logs/ingest` : "/api/v1/logs/ingest";
 
   if (org && !isAdmin) return <div><PageHeader title="Chaves de API" description={D} /><p className="text-sm text-muted-foreground">Somente administradores da organização podem gerenciar chaves de API.</p></div>;
 
@@ -138,6 +151,8 @@ function ApiKeys() {
               <p className="text-sm">Copie a chave agora. Ela <strong>não será exibida novamente</strong>.{rotate && " A chave anterior foi revogada."}</p>
               <div className="flex gap-2"><code className="flex-1 break-all rounded border bg-muted p-2 font-mono text-xs">{secret}</code>
                 <Button size="icon" variant="outline" onClick={() => { navigator.clipboard.writeText(secret); toast.success("Copiada"); }}><Copy className="h-4 w-4" /></Button></div>
+              <Button variant="outline" onClick={() => sendTest(secret)}>Enviar evento de teste</Button>
+              {testResult && <pre className="max-h-40 overflow-auto whitespace-pre-wrap rounded border bg-muted p-2 font-mono text-xs">{testResult}</pre>}
               <DialogFooter><Button onClick={() => { setOpen(false); setSecret(null); }}>Concluir</Button></DialogFooter>
             </div>
           ) : (
