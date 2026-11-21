@@ -5,3 +5,6 @@
 - [x] Test tenant isolation against the backend: 12 tests, seven tables (read/write/delete) and four guarded RPCs.
 - [x] Expand parser tests to 20; fix ISO syslog mistaken for a virtual-host access log; add upload-history regression test.
 - [x] Write Portuguese README.md: project description, technologies, log-collection setup, and usage guide.
+# Fase 2
+- [x] Etapa 2.1 — API de ingestão (`/api/public/v1/logs/ingest|batch`, `/ingestion/health`), página Chaves de API (criar, rotacionar, revogar, histórico), 13 testes.
+- [ ] Etapas 2.2–2.6 — aguardando o usuário pedir a próxima etapa.

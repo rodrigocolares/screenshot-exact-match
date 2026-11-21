@@ -160,6 +160,193 @@ export type Database = {
           },
         ]
       }
+      ingestion_api_keys: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          expires_at: string | null
+          id: string
+          key_hash: string
+          key_prefix: string
+          last_used_at: string | null
+          name: string
+          org_id: string
+          rate_limit_per_minute: number
+          revoked_at: string | null
+          rotated_from: string | null
+          scopes: string[]
+          server_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          key_hash: string
+          key_prefix: string
+          last_used_at?: string | null
+          name: string
+          org_id: string
+          rate_limit_per_minute?: number
+          revoked_at?: string | null
+          rotated_from?: string | null
+          scopes?: string[]
+          server_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          key_hash?: string
+          key_prefix?: string
+          last_used_at?: string | null
+          name?: string
+          org_id?: string
+          rate_limit_per_minute?: number
+          revoked_at?: string | null
+          rotated_from?: string | null
+          scopes?: string[]
+          server_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ingestion_api_keys_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ingestion_api_keys_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ingestion_api_requests: {
+        Row: {
+          api_key_id: string | null
+          created_at: string
+          endpoint: string
+          error: string | null
+          events: number
+          id: string
+          org_id: string | null
+          status_code: number
+        }
+        Insert: {
+          api_key_id?: string | null
+          created_at?: string
+          endpoint: string
+          error?: string | null
+          events?: number
+          id?: string
+          org_id?: string | null
+          status_code: number
+        }
+        Update: {
+          api_key_id?: string | null
+          created_at?: string
+          endpoint?: string
+          error?: string | null
+          events?: number
+          id?: string
+          org_id?: string | null
+          status_code?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ingestion_api_requests_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "ingestion_api_keys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ingestion_api_requests_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ingestion_batches: {
+        Row: {
+          api_key_id: string | null
+          created_at: string
+          errors: Json
+          events_accepted: number
+          events_duplicated: number
+          events_received: number
+          events_rejected: number
+          external_batch_id: string | null
+          id: string
+          org_id: string
+          server_id: string | null
+          source_type: string
+          status: string
+        }
+        Insert: {
+          api_key_id?: string | null
+          created_at?: string
+          errors?: Json
+          events_accepted?: number
+          events_duplicated?: number
+          events_received?: number
+          events_rejected?: number
+          external_batch_id?: string | null
+          id?: string
+          org_id: string
+          server_id?: string | null
+          source_type: string
+          status?: string
+        }
+        Update: {
+          api_key_id?: string | null
+          created_at?: string
+          errors?: Json
+          events_accepted?: number
+          events_duplicated?: number
+          events_received?: number
+          events_rejected?: number
+          external_batch_id?: string | null
+          id?: string
+          org_id?: string
+          server_id?: string | null
+          source_type?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ingestion_batches_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "ingestion_api_keys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ingestion_batches_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ingestion_batches_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ingestion_jobs: {
         Row: {
           created_at: string

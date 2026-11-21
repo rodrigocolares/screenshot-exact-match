@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated/alerts'
+import { Route as AuthenticatedApiKeysRouteImport } from './routes/_authenticated/api-keys'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedExplorerRouteImport } from './routes/_authenticated/explorer'
 import { Route as AuthenticatedLinuxRouteImport } from './routes/_authenticated/linux'
@@ -20,6 +21,9 @@ import { Route as AuthenticatedServersRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedUploadRouteImport } from './routes/_authenticated/upload'
 import { Route as AuthenticatedWindowsRouteImport } from './routes/_authenticated/windows'
+import { Route as ApiPublicV1IngestionHealthRouteImport } from './routes/api/public/v1/ingestion/health'
+import { Route as ApiPublicV1LogsBatchRouteImport } from './routes/api/public/v1/logs/batch'
+import { Route as ApiPublicV1LogsIngestRouteImport } from './routes/api/public/v1/logs/ingest'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -38,6 +42,11 @@ const AuthRoute = AuthRouteImport.update({
 const AuthenticatedAlertsRoute = AuthenticatedAlertsRouteImport.update({
   id: '/alerts',
   path: '/alerts',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedApiKeysRoute = AuthenticatedApiKeysRouteImport.update({
+  id: '/api-keys',
+  path: '/api-keys',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -75,11 +84,28 @@ const AuthenticatedWindowsRoute = AuthenticatedWindowsRouteImport.update({
   path: '/windows',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicV1IngestionHealthRoute =
+  ApiPublicV1IngestionHealthRouteImport.update({
+    id: '/api/public/v1/ingestion/health',
+    path: '/api/public/v1/ingestion/health',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicV1LogsBatchRoute = ApiPublicV1LogsBatchRouteImport.update({
+  id: '/api/public/v1/logs/batch',
+  path: '/api/public/v1/logs/batch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicV1LogsIngestRoute = ApiPublicV1LogsIngestRouteImport.update({
+  id: '/api/public/v1/logs/ingest',
+  path: '/api/public/v1/logs/ingest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/alerts': typeof AuthenticatedAlertsRoute
+  '/api-keys': typeof AuthenticatedApiKeysRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/explorer': typeof AuthenticatedExplorerRoute
   '/linux': typeof AuthenticatedLinuxRoute
@@ -87,11 +113,15 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/windows': typeof AuthenticatedWindowsRoute
+  '/api/public/v1/ingestion/health': typeof ApiPublicV1IngestionHealthRoute
+  '/api/public/v1/logs/batch': typeof ApiPublicV1LogsBatchRoute
+  '/api/public/v1/logs/ingest': typeof ApiPublicV1LogsIngestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/alerts': typeof AuthenticatedAlertsRoute
+  '/api-keys': typeof AuthenticatedApiKeysRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/explorer': typeof AuthenticatedExplorerRoute
   '/linux': typeof AuthenticatedLinuxRoute
@@ -99,6 +129,9 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/windows': typeof AuthenticatedWindowsRoute
+  '/api/public/v1/ingestion/health': typeof ApiPublicV1IngestionHealthRoute
+  '/api/public/v1/logs/batch': typeof ApiPublicV1LogsBatchRoute
+  '/api/public/v1/logs/ingest': typeof ApiPublicV1LogsIngestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -106,6 +139,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/alerts': typeof AuthenticatedAlertsRoute
+  '/_authenticated/api-keys': typeof AuthenticatedApiKeysRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/explorer': typeof AuthenticatedExplorerRoute
   '/_authenticated/linux': typeof AuthenticatedLinuxRoute
@@ -113,6 +147,9 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/upload': typeof AuthenticatedUploadRoute
   '/_authenticated/windows': typeof AuthenticatedWindowsRoute
+  '/api/public/v1/ingestion/health': typeof ApiPublicV1IngestionHealthRoute
+  '/api/public/v1/logs/batch': typeof ApiPublicV1LogsBatchRoute
+  '/api/public/v1/logs/ingest': typeof ApiPublicV1LogsIngestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -120,6 +157,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/alerts'
+    | '/api-keys'
     | '/dashboard'
     | '/explorer'
     | '/linux'
@@ -127,11 +165,15 @@ export interface FileRouteTypes {
     | '/settings'
     | '/upload'
     | '/windows'
+    | '/api/public/v1/ingestion/health'
+    | '/api/public/v1/logs/batch'
+    | '/api/public/v1/logs/ingest'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/alerts'
+    | '/api-keys'
     | '/dashboard'
     | '/explorer'
     | '/linux'
@@ -139,12 +181,16 @@ export interface FileRouteTypes {
     | '/settings'
     | '/upload'
     | '/windows'
+    | '/api/public/v1/ingestion/health'
+    | '/api/public/v1/logs/batch'
+    | '/api/public/v1/logs/ingest'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/alerts'
+    | '/_authenticated/api-keys'
     | '/_authenticated/dashboard'
     | '/_authenticated/explorer'
     | '/_authenticated/linux'
@@ -152,12 +198,18 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/upload'
     | '/_authenticated/windows'
+    | '/api/public/v1/ingestion/health'
+    | '/api/public/v1/logs/batch'
+    | '/api/public/v1/logs/ingest'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicV1IngestionHealthRoute: typeof ApiPublicV1IngestionHealthRoute
+  ApiPublicV1LogsBatchRoute: typeof ApiPublicV1LogsBatchRoute
+  ApiPublicV1LogsIngestRoute: typeof ApiPublicV1LogsIngestRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -188,6 +240,13 @@ declare module '@tanstack/react-router' {
       path: '/alerts'
       fullPath: '/alerts'
       preLoaderRoute: typeof AuthenticatedAlertsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/api-keys': {
+      id: '/_authenticated/api-keys'
+      path: '/api-keys'
+      fullPath: '/api-keys'
+      preLoaderRoute: typeof AuthenticatedApiKeysRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -239,11 +298,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWindowsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/v1/ingestion/health': {
+      id: '/api/public/v1/ingestion/health'
+      path: '/api/public/v1/ingestion/health'
+      fullPath: '/api/public/v1/ingestion/health'
+      preLoaderRoute: typeof ApiPublicV1IngestionHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/v1/logs/batch': {
+      id: '/api/public/v1/logs/batch'
+      path: '/api/public/v1/logs/batch'
+      fullPath: '/api/public/v1/logs/batch'
+      preLoaderRoute: typeof ApiPublicV1LogsBatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/v1/logs/ingest': {
+      id: '/api/public/v1/logs/ingest'
+      path: '/api/public/v1/logs/ingest'
+      fullPath: '/api/public/v1/logs/ingest'
+      preLoaderRoute: typeof ApiPublicV1LogsIngestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAlertsRoute: typeof AuthenticatedAlertsRoute
+  AuthenticatedApiKeysRoute: typeof AuthenticatedApiKeysRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedExplorerRoute: typeof AuthenticatedExplorerRoute
   AuthenticatedLinuxRoute: typeof AuthenticatedLinuxRoute
@@ -255,6 +336,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAlertsRoute: AuthenticatedAlertsRoute,
+  AuthenticatedApiKeysRoute: AuthenticatedApiKeysRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedExplorerRoute: AuthenticatedExplorerRoute,
   AuthenticatedLinuxRoute: AuthenticatedLinuxRoute,
@@ -271,6 +353,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicV1IngestionHealthRoute: ApiPublicV1IngestionHealthRoute,
+  ApiPublicV1LogsBatchRoute: ApiPublicV1LogsBatchRoute,
+  ApiPublicV1LogsIngestRoute: ApiPublicV1LogsIngestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import {
-  Activity, Bell, Database, FileUp, Gauge, LogOut, Monitor, Search, Server, Settings, Terminal,
+  Activity, Bell, Database, KeyRound, FileUp, Gauge, LogOut, Monitor, Search, Server, Settings, Terminal,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -35,7 +35,7 @@ const groups = [
       { to: "/upload", label: "Ingestão de logs", icon: FileUp },
     ],
   },
-  { label: "Administração", items: [{ to: "/settings", label: "Configurações", icon: Settings }] },
+  { label: "Administração", items: [{ to: "/api-keys", label: "Chaves de API", icon: KeyRound }, { to: "/settings", label: "Configurações", icon: Settings }] },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
