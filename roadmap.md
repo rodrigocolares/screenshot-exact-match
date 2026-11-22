@@ -7,4 +7,6 @@
 - [x] Write Portuguese README.md: project description, technologies, log-collection setup, and usage guide.
 # Fase 2
 - [x] Etapa 2.1 — API de ingestão (`/api/public/v1/logs/ingest|batch`, `/ingestion/health`), página Chaves de API (criar, rotacionar, revogar, histórico), 13 testes.
-- [ ] Etapas 2.2–2.6 — aguardando o usuário pedir a próxima etapa.
+- [ ] Etapa 2.2 — gestão e assistente de coletores, adaptação Fluent Bit, monitoramento real, documentação e testes.
+- [ ] Validar agente Linux real, reinício/rotação/reconexão e regressões multi-tenant; registrar dependências de Windows real.
+- [ ] Etapas 2.3–2.6 — aguardando nova solicitação.

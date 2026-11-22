@@ -160,6 +160,127 @@ export type Database = {
           },
         ]
       }
+      collector_audit: {
+        Row: {
+          action: string
+          actor_id: string | null
+          collector_id: string | null
+          created_at: string
+          id: string
+          org_id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          collector_id?: string | null
+          created_at?: string
+          id?: string
+          org_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          collector_id?: string | null
+          created_at?: string
+          id?: string
+          org_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collector_audit_collector_id_fkey"
+            columns: ["collector_id"]
+            isOneToOne: false
+            referencedRelation: "collectors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collector_audit_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collectors: {
+        Row: {
+          api_key_id: string
+          created_at: string
+          created_by: string | null
+          events_total: number
+          id: string
+          last_delivery_at: string | null
+          last_error: string | null
+          last_error_at: string | null
+          last_event_at: string | null
+          last_heartbeat_at: string | null
+          last_http_status: number | null
+          name: string
+          org_id: string
+          server_id: string
+          sources: Json
+          version: string
+        }
+        Insert: {
+          api_key_id: string
+          created_at?: string
+          created_by?: string | null
+          events_total?: number
+          id?: string
+          last_delivery_at?: string | null
+          last_error?: string | null
+          last_error_at?: string | null
+          last_event_at?: string | null
+          last_heartbeat_at?: string | null
+          last_http_status?: number | null
+          name: string
+          org_id: string
+          server_id: string
+          sources?: Json
+          version?: string
+        }
+        Update: {
+          api_key_id?: string
+          created_at?: string
+          created_by?: string | null
+          events_total?: number
+          id?: string
+          last_delivery_at?: string | null
+          last_error?: string | null
+          last_error_at?: string | null
+          last_event_at?: string | null
+          last_heartbeat_at?: string | null
+          last_http_status?: number | null
+          name?: string
+          org_id?: string
+          server_id?: string
+          sources?: Json
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collectors_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "ingestion_api_keys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collectors_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collectors_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ingestion_api_keys: {
         Row: {
           created_at: string
@@ -232,6 +353,7 @@ export type Database = {
       ingestion_api_requests: {
         Row: {
           api_key_id: string | null
+          collector_id: string | null
           created_at: string
           endpoint: string
           error: string | null
@@ -242,6 +364,7 @@ export type Database = {
         }
         Insert: {
           api_key_id?: string | null
+          collector_id?: string | null
           created_at?: string
           endpoint: string
           error?: string | null
@@ -252,6 +375,7 @@ export type Database = {
         }
         Update: {
           api_key_id?: string | null
+          collector_id?: string | null
           created_at?: string
           endpoint?: string
           error?: string | null
@@ -269,6 +393,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ingestion_api_requests_collector_id_fkey"
+            columns: ["collector_id"]
+            isOneToOne: false
+            referencedRelation: "collectors"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "ingestion_api_requests_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -280,6 +411,7 @@ export type Database = {
       ingestion_batches: {
         Row: {
           api_key_id: string | null
+          collector_id: string | null
           created_at: string
           errors: Json
           events_accepted: number
@@ -295,6 +427,7 @@ export type Database = {
         }
         Insert: {
           api_key_id?: string | null
+          collector_id?: string | null
           created_at?: string
           errors?: Json
           events_accepted?: number
@@ -310,6 +443,7 @@ export type Database = {
         }
         Update: {
           api_key_id?: string | null
+          collector_id?: string | null
           created_at?: string
           errors?: Json
           events_accepted?: number
@@ -329,6 +463,13 @@ export type Database = {
             columns: ["api_key_id"]
             isOneToOne: false
             referencedRelation: "ingestion_api_keys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ingestion_batches_collector_id_fkey"
+            columns: ["collector_id"]
+            isOneToOne: false
+            referencedRelation: "collectors"
             referencedColumns: ["id"]
           },
           {
@@ -700,6 +841,10 @@ export type Database = {
     Functions: {
       can_write_org: { Args: { _org: string }; Returns: boolean }
       clear_demo_data: { Args: { _org: string }; Returns: undefined }
+      collector_hourly: {
+        Args: { _collector: string; _org: string }
+        Returns: Json
+      }
       dashboard_stats: {
         Args: { _bucket?: string; _org: string; _since: string }
         Returns: Json
@@ -708,6 +853,17 @@ export type Database = {
       is_org_admin: { Args: { _org: string }; Returns: boolean }
       is_org_member: { Args: { _org: string }; Returns: boolean }
       load_demo_data: { Args: { _org: string }; Returns: number }
+      record_collector_delivery: {
+        Args: {
+          _accepted: number
+          _error?: string
+          _event_at: string
+          _heartbeat: boolean
+          _id: string
+          _status: number
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       org_role: "admin" | "analyst" | "viewer"
