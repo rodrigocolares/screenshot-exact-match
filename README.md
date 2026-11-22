@@ -13,6 +13,8 @@ Plataforma de centralização, análise e investigação de logs com inteligênc
 - **Inventário de servidores** com hostname, SO, ambiente, serviços e responsável.
 - **Dados de demonstração** fictícios e isolados, removíveis sem afetar dados reais.
 - **Multi-tenant**: cada organização enxerga apenas os próprios dados (RLS no banco).
+- **API de ingestão automática** (`POST /api/v1/logs/ingest`) para envio de logs por HTTPS, com autenticação por chave de API, lotes de até 1.000 eventos (máx. 1 MB), deduplicação e resposta idempotente.
+- **Gerenciamento de chaves de API**: criação, validade, revogação e rotação, vinculadas à organização e, opcionalmente, a um servidor; a chave completa aparece apenas uma vez e nunca é armazenada (apenas o hash).
 
 ### Formatos de log suportados
 
@@ -41,7 +43,7 @@ Plataforma de centralização, análise e investigação de logs com inteligênc
 
 ## Como instalar a coleta de logs
 
-A coleta é feita enviando os arquivos de log para a plataforma. Hoje o fluxo suportado é o **upload manual** pela interface; arquivos compactados (`.gz`, `.zip`) ou binários (`.evtx`) precisam ser extraídos/convertidos para texto antes do envio.
+A coleta pode ser feita de duas formas: **upload manual** pela interface (arquivos compactados `.gz`/`.zip` ou binários `.evtx` precisam ser extraídos/convertidos para texto antes do envio) ou **envio automático pela API de ingestão**, indicada para coletores e automações.
 
 ### 1. Cadastre o servidor
 
@@ -88,6 +90,24 @@ Get-WinEvent -LogName Security -MaxEvents 5000 | ConvertTo-Json | Out-File event
 4. Confira a **pré-visualização** (formato detectado, eventos válidos e rejeitados) e clique em **Importar**.
 5. O resultado mostra eventos importados, duplicados (ignorados por hash) e rejeitados; o **histórico de importações** é atualizado na hora.
 
+### 4. Envio automático pela API (coletores e automações)
+
+1. Acesse **Chaves de API** (menu Administração, apenas administradores) e clique em **Nova chave**. Defina nome, validade, limite de chamadas por minuto e, opcionalmente, o servidor vinculado.
+2. **Copie a chave no momento da criação** (começa com `lsk_`): ela não aparece novamente e não é armazenada.
+3. Envie eventos com `curl` ou pelo seu coletor:
+
+```bash
+curl -X POST https://pixel-perfect-recreation-2056.lovable.app/api/v1/logs/ingest \
+  -H "Authorization: Bearer lsk_SUA_CHAVE" -H "Content-Type: application/json" \
+  -d '{"hostname":"SRV-WEB-01","operating_system":"linux","source_type":"generic",
+       "events":[{"severity":"ERROR","message":"Falha de teste via API"}]}'
+```
+
+- A resposta `202` informa eventos aceitos, duplicados e rejeitados; reenviar o mesmo lote (`batch_id`) não cria duplicatas.
+- A organização é definida pela chave — envios que tentam indicar outra organização são recusados. Chaves vinculadas a um servidor só aceitam logs dele; servidores novos são cadastrados automaticamente (informe `operating_system`).
+- Endpoints: `POST /api/v1/logs/ingest` (principal), `POST /api/v1/logs/batch` (lotes) e `GET /api/v1/ingestion/health` (status). Se o site publicado for privado, use os equivalentes em `/api/public/v1/...`.
+- Logo após criar a chave, o botão **Enviar evento de teste** valida o envio sem sair da página.
+
 > Dica: para coleta contínua, um agente como o Fluent Bit pode rotacionar e entregar os arquivos; a API de ingestão server-side (`ingestLogFile`) é o ponto de entrada usado pelo upload.
 
 ## Como usar
@@ -99,7 +119,8 @@ Get-WinEvent -LogName Security -MaxEvents 5000 | ConvertTo-Json | Out-File event
 5. **Log Explorer**: filtre por período, host, severidade e texto; clique em um evento para ver detalhes e abrir a **investigação com IA**.
 6. **Alertas**: veja ocorrências disparadas pelas regras avaliadas a cada ingestão.
 7. **Servidores**: mantenha o inventário atualizado; servidores sem comunicação há mais de 1 hora são destacados.
-8. **Configurações**: gerencie a organização e os dados de demonstração.
+8. **Chaves de API**: crie, rotacione e revogue chaves para a ingestão automática, e acompanhe o histórico de chamadas de cada chave.
+9. **Configurações**: gerencie a organização e os dados de demonstração.
 
 ## Desenvolvimento local
 
