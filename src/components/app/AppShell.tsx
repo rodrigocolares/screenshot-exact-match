@@ -32,6 +32,7 @@ const groups = [
     label: "Gestão",
     items: [
       { to: "/servers", label: "Servidores", icon: Server },
+      { to: "/collectors", label: "Agentes e Coletores", icon: Activity },
       { to: "/upload", label: "Ingestão de logs", icon: FileUp },
     ],
   },

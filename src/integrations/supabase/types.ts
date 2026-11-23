@@ -217,6 +217,7 @@ export type Database = {
           last_http_status: number | null
           name: string
           org_id: string
+          reported_version: string | null
           server_id: string
           sources: Json
           version: string
@@ -235,6 +236,7 @@ export type Database = {
           last_http_status?: number | null
           name: string
           org_id: string
+          reported_version?: string | null
           server_id: string
           sources?: Json
           version?: string
@@ -253,6 +255,7 @@ export type Database = {
           last_http_status?: number | null
           name?: string
           org_id?: string
+          reported_version?: string | null
           server_id?: string
           sources?: Json
           version?: string

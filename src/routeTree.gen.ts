@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated/alerts'
 import { Route as AuthenticatedApiKeysRouteImport } from './routes/_authenticated/api-keys'
+import { Route as AuthenticatedCollectorsRouteImport } from './routes/_authenticated/collectors'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedExplorerRouteImport } from './routes/_authenticated/explorer'
 import { Route as AuthenticatedLinuxRouteImport } from './routes/_authenticated/linux'
@@ -50,6 +51,11 @@ const AuthenticatedAlertsRoute = AuthenticatedAlertsRouteImport.update({
 const AuthenticatedApiKeysRoute = AuthenticatedApiKeysRouteImport.update({
   id: '/api-keys',
   path: '/api-keys',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCollectorsRoute = AuthenticatedCollectorsRouteImport.update({
+  id: '/collectors',
+  path: '/collectors',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/alerts': typeof AuthenticatedAlertsRoute
   '/api-keys': typeof AuthenticatedApiKeysRoute
+  '/collectors': typeof AuthenticatedCollectorsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/explorer': typeof AuthenticatedExplorerRoute
   '/linux': typeof AuthenticatedLinuxRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/alerts': typeof AuthenticatedAlertsRoute
   '/api-keys': typeof AuthenticatedApiKeysRoute
+  '/collectors': typeof AuthenticatedCollectorsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/explorer': typeof AuthenticatedExplorerRoute
   '/linux': typeof AuthenticatedLinuxRoute
@@ -164,6 +172,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/alerts': typeof AuthenticatedAlertsRoute
   '/_authenticated/api-keys': typeof AuthenticatedApiKeysRoute
+  '/_authenticated/collectors': typeof AuthenticatedCollectorsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/explorer': typeof AuthenticatedExplorerRoute
   '/_authenticated/linux': typeof AuthenticatedLinuxRoute
@@ -185,6 +194,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/alerts'
     | '/api-keys'
+    | '/collectors'
     | '/dashboard'
     | '/explorer'
     | '/linux'
@@ -204,6 +214,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/alerts'
     | '/api-keys'
+    | '/collectors'
     | '/dashboard'
     | '/explorer'
     | '/linux'
@@ -224,6 +235,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/alerts'
     | '/_authenticated/api-keys'
+    | '/_authenticated/collectors'
     | '/_authenticated/dashboard'
     | '/_authenticated/explorer'
     | '/_authenticated/linux'
@@ -286,6 +298,13 @@ declare module '@tanstack/react-router' {
       path: '/api-keys'
       fullPath: '/api-keys'
       preLoaderRoute: typeof AuthenticatedApiKeysRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/collectors': {
+      id: '/_authenticated/collectors'
+      path: '/collectors'
+      fullPath: '/collectors'
+      preLoaderRoute: typeof AuthenticatedCollectorsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -385,6 +404,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAlertsRoute: typeof AuthenticatedAlertsRoute
   AuthenticatedApiKeysRoute: typeof AuthenticatedApiKeysRoute
+  AuthenticatedCollectorsRoute: typeof AuthenticatedCollectorsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedExplorerRoute: typeof AuthenticatedExplorerRoute
   AuthenticatedLinuxRoute: typeof AuthenticatedLinuxRoute
@@ -397,6 +417,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAlertsRoute: AuthenticatedAlertsRoute,
   AuthenticatedApiKeysRoute: AuthenticatedApiKeysRoute,
+  AuthenticatedCollectorsRoute: AuthenticatedCollectorsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedExplorerRoute: AuthenticatedExplorerRoute,
   AuthenticatedLinuxRoute: AuthenticatedLinuxRoute,

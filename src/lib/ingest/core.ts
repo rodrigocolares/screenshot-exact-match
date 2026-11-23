@@ -63,6 +63,8 @@ export const eventSchema = z
   .refine((e) => e.message || e.raw, { message: "message ou raw é obrigatório" });
 
 export const batchSchema = z.object({
+  collector_id: z.string().uuid().optional(),
+  source_id: z.string().uuid().optional(),
   batch_id: safeText(200).optional(),
   hostname: z.string().min(1).max(255).regex(/^[A-Za-z0-9._-]+$/),
   operating_system: z.enum(["windows", "linux"]).optional(),
@@ -70,6 +72,11 @@ export const batchSchema = z.object({
   environment: safeText(40).optional(),
   events: z.array(z.unknown()).min(1).max(MAX_EVENTS_PER_BATCH),
 });
+
+export const heartbeatSchema = z.object({
+  heartbeat: z.literal(true), collector_id: z.string().uuid(), hostname: z.string().min(1).max(255).regex(/^[A-Za-z0-9._-]+$/),
+  operating_system: z.enum(["windows", "linux"]), version: z.string().max(40),
+}).strict();
 
 export type BatchPayload = z.infer<typeof batchSchema>;
 export type ApiEvent = z.infer<typeof eventSchema>;
