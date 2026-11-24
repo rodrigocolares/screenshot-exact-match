@@ -11,4 +11,3 @@ export const collectorsQuery = (orgId: string) => queryOptions({
   },
   refetchInterval: 15_000,
 });
-export type Collector = Awaited<ReturnType<ReturnType<typeof collectorsQuery>["queryFn"] extends (...args: never[]) => infer R ? () => R : never>>[number];

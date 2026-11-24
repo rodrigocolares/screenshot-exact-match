@@ -93,6 +93,7 @@ export function normalizeEvent(e: ApiEvent, sourceType: string, now = new Date()
     if (!p) return null;
     if (e.timestamp) p.timestamp = new Date(e.timestamp).toISOString();
     if (e.severity) p.severity = normalizeSeverity(e.severity);
+    p.attributes = { ...p.attributes, ...e.attributes };
     return p;
   }
   const a = e.attributes ?? {};

@@ -15,6 +15,8 @@ Plataforma de centralização, análise e investigação de logs com inteligênc
 - **Multi-tenant**: cada organização enxerga apenas os próprios dados (RLS no banco).
 - **API de ingestão automática** (`POST /api/v1/logs/ingest`) para envio de logs por HTTPS, com autenticação por chave de API, lotes de até 1.000 eventos (máx. 1 MB), deduplicação e resposta idempotente.
 - **Gerenciamento de chaves de API**: criação, validade, revogação e rotação, vinculadas à organização e, opcionalmente, a um servidor; a chave completa aparece apenas uma vez e nunca é armazenada (apenas o hash).
+- **Agentes e Coletores**: cadastro Windows/Linux, fontes configuráveis, assistente Fluent Bit 5.0.7, indicadores e detalhes atualizados a cada 15 s; separação entre heartbeat real, envio de logs, atraso, erro e ausência de eventos/comunicação.
+- **Adaptador local Python**: transforma a saída do Fluent Bit para a API existente, divide lotes dentro dos limites, mantém fila em disco e retenta falhas sem expor a chave nas configurações.
 
 ### Formatos de log suportados
 
@@ -108,7 +110,16 @@ curl -X POST https://pixel-perfect-recreation-2056.lovable.app/api/v1/logs/inges
 - Endpoints: `POST /api/v1/logs/ingest` (principal), `POST /api/v1/logs/batch` (lotes) e `GET /api/v1/ingestion/health` (status). Se o site publicado for privado, use os equivalentes em `/api/public/v1/...`.
 - Logo após criar a chave, o botão **Enviar evento de teste** valida o envio sem sair da página.
 
-> Dica: para coleta contínua, um agente como o Fluent Bit pode rotacionar e entregar os arquivos; a API de ingestão server-side (`ingestLogFile`) é o ponto de entrada usado pelo upload.
+### 5. Coleta contínua Windows/Linux — Etapa 2.2
+
+1. Abra **Gestão → Agentes e Coletores → Adicionar Coletor**.
+2. Escolha Windows/Linux, servidor existente ou novo, ambiente, fontes, caminhos/canais e uma chave válida da organização.
+3. Confirme a URL HTTPS publicada com a chave completa (usada apenas em memória). O teste de endereço não confirma o agente remoto.
+4. Baixe os arquivos gerados e o adaptador. Instale Fluent Bit **5.0.7** e Python **3.10+** no servidor. A chave é passada somente por `LOGSENTINEL_API_KEY`, nunca embutida nos arquivos.
+5. Siga o [guia completo de instalação Windows/Linux](public/collectors/INSTALL.md), incluindo permissões, serviços, offsets, buffer, retentativas e riscos de perda.
+6. Gere uma linha real na fonte escolhida, confira HTTP 202 do backend e encontre o evento no Log Explorer da organização correta. Só então considere a coleta daquela fonte validada.
+
+Fluent Bit envia seu JSON ao adaptador em loopback; este usa a mesma API autenticada. O heartbeat só é enviado após verificar a saúde real do processo Fluent Bit. Não presumimos conexão pelo cadastro de um servidor. Windows requer validação em máquina Windows; consulte o [relatório da etapa](docs/ETAPA-2.2.md) para os testes efetivamente executados.
 
 ## Como usar
 
@@ -121,6 +132,7 @@ curl -X POST https://pixel-perfect-recreation-2056.lovable.app/api/v1/logs/inges
 7. **Servidores**: mantenha o inventário atualizado; servidores sem comunicação há mais de 1 hora são destacados.
 8. **Chaves de API**: crie, rotacione e revogue chaves para a ingestão automática, e acompanhe o histórico de chamadas de cada chave.
 9. **Configurações**: gerencie a organização e os dados de demonstração.
+10. **Agentes e Coletores**: filtre por organização autorizada, servidor, SO, ambiente e estado; acompanhe fontes, versão informada, comunicações, eventos por hora e respostas da API.
 
 ## Desenvolvimento local
 
