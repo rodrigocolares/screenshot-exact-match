@@ -28,6 +28,13 @@ export const collectorSchema = z.object({
   sources: z.array(sourceSchema).min(1).max(20),
 });
 export type Source = z.infer<typeof sourceSchema>;
+const COLLECTOR_ORIGINS = ["https://pixel-perfect-recreation-2056.lovable.app", "https://id-preview--ad665671-fa22-492f-89a7-2436ca487828.lovable.app", "https://project--ad665671-fa22-492f-89a7-2436ca487828.lovable.app", "https://project--ad665671-fa22-492f-89a7-2436ca487828-dev.lovable.app"];
+export function isCollectorEndpoint(endpoint: string) {
+  try {
+    const url = new URL(endpoint);
+    return COLLECTOR_ORIGINS.includes(url.origin) && !url.username && !url.password && !url.search && !url.hash && /^\/api\/(public\/)?v1\/logs\/(ingest|batch)$/.test(url.pathname);
+  } catch { return false; }
+}
 export const COMMUNICATION_TIMEOUT_MS = 5 * 60_000;
 export const EVENT_TIMEOUT_MS = 60 * 60_000;
 export type CollectorSignal = { last_heartbeat_at: string | null; last_delivery_at: string | null; last_event_at: string | null; last_http_status: number | null };
@@ -50,7 +57,7 @@ export function generateConfig(c: { id: string; version: string; sources: Source
     lines.push("", "[INPUT]", `    Name ${s.type === "windows_event" ? "winevtlog" : s.type === "journald" ? "systemd" : "tail"}`, `    Tag source.${s.id}`, `    DB ${root}/${s.id}.db`, "    storage.type filesystem");
     if (s.type === "windows_event") lines.push(`    Channels ${s.path}`, "    Read_Existing_Events Off", "    Render_Event_As_XML Off");
     else if (s.type === "journald") lines.push(`    Path ${s.path}`, "    Read_From_Tail On");
-    else lines.push(`    Path ${s.path}`, "    Path_Key source_file", "    Read_from_Head On", "    Refresh_Interval 2", "    Rotate_Wait 30", "    DB.Sync Full", "    Buffer_Max_Size 32K", "    Skip_Long_Lines Off", ...(s.type === "java_app" ? ["    multiline.parser logsentinel_java"] : []));
+    else lines.push(`    Path ${s.path}`, "    Path_Key source_file", "    Read_from_Head On", "    Refresh_Interval 2", "    Rotate_Wait 30", "    DB.Sync Full", "    Buffer_Chunk_Size 16K", "    Buffer_Max_Size 32K", "    Skip_Long_Lines Off", ...(s.type === "java_app" ? ["    multiline.parser logsentinel_java"] : []));
     lines.push("", "[OUTPUT]", "    Name http", `    Match source.${s.id}`, "    Host 127.0.0.1", "    Port 9880", `    URI /${s.id}`, "    Format json", "    Json_date_key collected_at", "    Json_date_format iso8601", "    Retry_Limit False", "    storage.total_limit_size 512M");
   }
   return lines.join("\n") + "\n";

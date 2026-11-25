@@ -90,7 +90,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset className="bg-background">
+      <SidebarInset className="min-w-0 bg-background">
         <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b bg-background/85 px-4 backdrop-blur">
           <SidebarTrigger />
           <div className="flex items-center gap-2 text-sm text-muted-foreground">

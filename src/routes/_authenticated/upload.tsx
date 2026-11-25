@@ -17,7 +17,7 @@ import { LOG_TYPES, parseLogs, type LogType } from "@/lib/logs/parsers";
 import { fmtDate, fmtNum, SOURCE_LABEL } from "@/lib/logs/meta";
 
 export const Route = createFileRoute("/_authenticated/upload")({
-  head: () => ({ meta: [{ title: "Ingestão de logs — LogSentinel AI" }, { name: "description", content: "Envie arquivos de log para análise." }, { property: "og:title", content: "Ingestão de logs — LogSentinel AI" }, { property: "og:description", content: "Envie arquivos de log para análise." }] }),
+  head: () => ({ meta: [{ title: "Ingestão de logs — LogSentinel AI" }, { name: "description", content: "Envie arquivos de log para análise." }, { property: "og:title", content: "Ingestão de logs — LogSentinel AI" }, { property: "og:description", content: "Envie arquivos de log para análise." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Upload,
 });
 

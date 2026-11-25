@@ -16,7 +16,7 @@ import { fmtDate, SEVERITIES, SEVERITY_LABEL, SOURCE_LABEL } from "@/lib/logs/me
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/alerts")({
-  head: () => ({ meta: [{ title: "Alertas — LogSentinel AI" }, { name: "description", content: "Regras e ocorrências de alertas." }, { property: "og:title", content: "Alertas — LogSentinel AI" }, { property: "og:description", content: "Regras e ocorrências de alertas." }] }),
+  head: () => ({ meta: [{ title: "Alertas — LogSentinel AI" }, { name: "description", content: "Regras e ocorrências de alertas." }, { property: "og:title", content: "Alertas — LogSentinel AI" }, { property: "og:description", content: "Regras e ocorrências de alertas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Alerts,
 });
 

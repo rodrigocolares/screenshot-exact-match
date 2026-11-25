@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { OsOverview } from "@/components/app/OsOverview";
 
 export const Route = createFileRoute("/_authenticated/windows")({
-  head: () => ({ meta: [{ title: "Windows — LogSentinel AI" }, { name: "description", content: "IIS, FTP e Windows Event Log." }, { property: "og:title", content: "Windows — LogSentinel AI" }, { property: "og:description", content: "IIS, FTP e Windows Event Log." }] }),
+  head: () => ({ meta: [{ title: "Windows — LogSentinel AI" }, { name: "description", content: "IIS, FTP e Windows Event Log." }, { property: "og:title", content: "Windows — LogSentinel AI" }, { property: "og:description", content: "IIS, FTP e Windows Event Log." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: () => (
     <OsOverview
       os="windows"

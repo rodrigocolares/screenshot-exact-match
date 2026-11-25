@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { OsOverview } from "@/components/app/OsOverview";
 
 export const Route = createFileRoute("/_authenticated/linux")({
-  head: () => ({ meta: [{ title: "Linux — LogSentinel AI" }, { name: "description", content: "Apache, Nginx, Java, SSH, syslog e FTP." }, { property: "og:title", content: "Linux — LogSentinel AI" }, { property: "og:description", content: "Apache, Nginx, Java, SSH, syslog e FTP." }] }),
+  head: () => ({ meta: [{ title: "Linux — LogSentinel AI" }, { name: "description", content: "Apache, Nginx, Java, SSH, syslog e FTP." }, { property: "og:title", content: "Linux — LogSentinel AI" }, { property: "og:description", content: "Apache, Nginx, Java, SSH, syslog e FTP." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: () => (
     <OsOverview
       os="linux"

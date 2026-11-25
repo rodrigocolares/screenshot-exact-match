@@ -1,11 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { collectorSchema, collectorState, generateConfig, COMMUNICATION_TIMEOUT_MS, EVENT_TIMEOUT_MS } from "./core";
+import { collectorSchema, collectorState, generateConfig, COMMUNICATION_TIMEOUT_MS, EVENT_TIMEOUT_MS, isCollectorEndpoint } from "./core";
 import { batchSchema, heartbeatSchema, MAX_BODY_BYTES, MAX_EVENTS_PER_BATCH } from "@/lib/ingest/core";
 const id = "00000000-0000-4000-8000-000000000001";
 const now = Date.parse("2026-11-22T03:00:00Z");
 const stamp = (age: number) => new Date(now - age).toISOString();
 const empty = { last_heartbeat_at: null, last_delivery_at: null, last_event_at: null, last_http_status: null };
 describe("Collector rules", () => {
+  it("never forwards API keys to an arbitrary endpoint", () => {
+    expect(isCollectorEndpoint("https://pixel-perfect-recreation-2056.lovable.app/api/public/v1/logs/ingest")).toBe(true);
+    expect(isCollectorEndpoint("https://attacker.test/api/v1/logs/ingest")).toBe(false);
+    expect(isCollectorEndpoint("https://pixel-perfect-recreation-2056.lovable.app/api/v1/logs/ingest?key=x")).toBe(false);
+  });
   it("does not infer connectivity from registration", () => expect(collectorState(empty, now)).toBe("unconfirmed"));
   it("separates real heartbeat from log-only delivery", () => {
     expect(collectorState({ ...empty, last_delivery_at: stamp(0), last_event_at: stamp(0) }, now)).toBe("logs_only");

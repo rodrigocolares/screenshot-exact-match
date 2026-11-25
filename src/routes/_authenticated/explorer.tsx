@@ -33,7 +33,7 @@ type S = z.infer<typeof search>;
 
 export const Route = createFileRoute("/_authenticated/explorer")({
   validateSearch: search,
-  head: () => ({ meta: [{ title: "Log Explorer — LogSentinel AI" }, { name: "description", content: "Busque e filtre eventos de log." }, { property: "og:title", content: "Log Explorer — LogSentinel AI" }, { property: "og:description", content: "Busque e filtre eventos de log." }] }),
+  head: () => ({ meta: [{ title: "Log Explorer — LogSentinel AI" }, { name: "description", content: "Busque e filtre eventos de log." }, { property: "og:title", content: "Log Explorer — LogSentinel AI" }, { property: "og:description", content: "Busque e filtre eventos de log." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Explorer,
 });
 

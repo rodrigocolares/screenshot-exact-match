@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { fmtDate } from "@/lib/logs/meta";
 
 export const Route = createFileRoute("/_authenticated/servers")({
-  head: () => ({ meta: [{ title: "Servidores — LogSentinel AI" }, { name: "description", content: "Inventário de servidores monitorados." }, { property: "og:title", content: "Servidores — LogSentinel AI" }, { property: "og:description", content: "Inventário de servidores monitorados." }] }),
+  head: () => ({ meta: [{ title: "Servidores — LogSentinel AI" }, { name: "description", content: "Inventário de servidores monitorados." }, { property: "og:title", content: "Servidores — LogSentinel AI" }, { property: "og:description", content: "Inventário de servidores monitorados." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Servers,
 });
 

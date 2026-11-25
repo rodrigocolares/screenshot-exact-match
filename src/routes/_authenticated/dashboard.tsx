@@ -15,7 +15,7 @@ const search = z.object({ range: z.string().default("24h"), refresh: z.number().
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   validateSearch: search,
-  head: () => ({ meta: [{ title: "Dashboard — LogSentinel AI" }, { name: "description", content: "Visão executiva dos logs e alertas." }, { property: "og:title", content: "Dashboard — LogSentinel AI" }, { property: "og:description", content: "Visão executiva dos logs e alertas." }] }),
+  head: () => ({ meta: [{ title: "Dashboard — LogSentinel AI" }, { name: "description", content: "Visão executiva dos logs e alertas." }, { property: "og:title", content: "Dashboard — LogSentinel AI" }, { property: "og:description", content: "Visão executiva dos logs e alertas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Dashboard,
 });
 

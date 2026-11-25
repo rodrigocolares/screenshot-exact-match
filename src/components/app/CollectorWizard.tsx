@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Download, Network, Plus, Send, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { saveCollector } from "@/lib/api/collectors.functions";
+import { saveCollector, testCollectorEndpoint } from "@/lib/api/collectors.functions";
 import { SOURCE_OPTIONS, generateConfig, MULTILINE_CONFIG, type Source } from "@/lib/collectors/core";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,18 +19,19 @@ export function downloadText(name: string, content: string) {
 }
 const ENV = { production: "Produção", staging: "Homologação", development: "Desenvolvimento" };
 
-export function CollectorWizard({ orgId, open, onClose }: { orgId: string; open: boolean; onClose: () => void }) {
+export function CollectorWizard({ orgId, open, onClose, initial }: { orgId: string; open: boolean; onClose: () => void; initial?: { id: string; server_id: string; api_key_id: string; name: string; sources: Source[]; servers: { hostname: string; os: string; environment: string } | null } }) {
   const qc = useQueryClient();
   const save = useServerFn(saveCollector);
+  const testEndpoint = useServerFn(testCollectorEndpoint);
   const [step, setStep] = useState(1);
-  const [os, setOs] = useState("linux");
-  const [serverId, setServerId] = useState("");
-  const [hostname, setHostname] = useState("");
-  const [environment, setEnvironment] = useState("production");
-  const [name, setName] = useState("");
-  const [keyId, setKeyId] = useState("");
+  const [os, setOs] = useState(initial?.servers?.os ?? "linux");
+  const [serverId, setServerId] = useState(initial?.server_id ?? "");
+  const [hostname, setHostname] = useState(initial?.servers?.hostname ?? "");
+  const [environment, setEnvironment] = useState(initial?.servers?.environment ?? "production");
+  const [name, setName] = useState(initial?.name ?? "");
+  const [keyId, setKeyId] = useState(initial?.api_key_id ?? "");
   const [secret, setSecret] = useState("");
-  const [sources, setSources] = useState<Source[]>([]);
+  const [sources, setSources] = useState<Source[]>(initial?.sources ?? []);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [endpoint, setEndpoint] = useState("https://pixel-perfect-recreation-2056.lovable.app/api/public/v1/logs/ingest");
   const [verified, setVerified] = useState(false);
@@ -53,9 +54,10 @@ export function CollectorWizard({ orgId, open, onClose }: { orgId: string; open:
         id = data.id; setServerId(id);
         await qc.invalidateQueries({ queryKey: ["collector-servers", orgId] });
       }
-      const response = await save({ data: { orgId, serverId: id, apiKeyId: keyId, name: name || host, version: "5.0.7", sources } });
+      const response = await save({ data: { orgId, ...(initial ? { id: initial.id } : {}), serverId: id, apiKeyId: keyId, name: name || host, version: "5.0.7", sources } });
       setSavedId(response.id); setStep(3);
       await qc.invalidateQueries({ queryKey: ["collectors", orgId] });
+      await qc.invalidateQueries({ queryKey: ["collector-server-count", orgId] });
     } catch (e) { toast.error(e instanceof Error ? e.message : "Falha ao configurar coletor"); }
     setBusy(false);
   }
@@ -66,9 +68,8 @@ export function CollectorWizard({ orgId, open, onClose }: { orgId: string; open:
       const url = new URL(endpoint);
       if (url.protocol !== "https:" || !/^\/api\/(public\/)?v1\/logs\/(ingest|batch)$/.test(url.pathname) || url.search || url.username || url.password) throw new Error("Informe um endpoint HTTPS válido, sem credenciais na URL");
       // A signed empty batch verifies routing + credential + association, but writes no event/heartbeat.
-      const response = await fetch(url.href, { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${secret}` }, body: JSON.stringify({ collector_id: savedId, source_id: sources[0].id, hostname: host, operating_system: os, source_type: sources[0].type, events: [] }) });
-      const body = await response.json();
-      if (response.status !== 400 || body.error !== "invalid_payload") throw new Error(`HTTP ${response.status}: URL, chave ou associação não confirmada`);
+      const body = await testEndpoint({ data: { orgId, collectorId: savedId, endpoint: url.href, key: secret } });
+      if (body.status !== 400 || body.error !== "invalid_payload") throw new Error(`HTTP ${body.status}: URL, chave ou associação não confirmada`);
       setVerified(true); setResult("URL e credencial confirmadas. Nenhum evento ou heartbeat foi criado.");
     } catch (e) { setResult(e instanceof Error ? e.message : "Não foi possível confirmar o endereço. Confira a publicação e a conexão."); }
     setBusy(false);
@@ -78,9 +79,8 @@ export function CollectorWizard({ orgId, open, onClose }: { orgId: string; open:
     if (!source || !savedId) return;
     setBusy(true);
     try {
-      const response = await fetch(endpoint, { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${secret}` }, body: JSON.stringify({ collector_id: savedId, source_id: source.id, hostname: host, operating_system: os, source_type: source.type, events: [{ ...(source.type === "generic" ? { message: realLine } : { raw: realLine }) }] }) });
-      const body = await response.json();
-      if (response.status !== 202 || body.accepted !== 1) throw new Error(`HTTP ${response.status} — aceitos: ${body.accepted ?? 0}, rejeitados: ${body.rejected ?? 0}`);
+      const body = await testEndpoint({ data: { orgId, collectorId: savedId, endpoint, key: secret, line: realLine } });
+      if (body.status !== 202 || body.accepted !== 1 || !body.batch_id) throw new Error(`HTTP ${body.status} — aceitos: ${body.accepted ?? 0}, rejeitados: ${body.rejected ?? 0}`);
       const { data, error } = await supabase.from("log_events").select("id").eq("org_id", orgId).contains("attributes", { ingest_batch_id: body.batch_id }).limit(1);
       if (error || !data?.length) throw new Error("Resposta recebida, mas evento ainda não confirmado na organização");
       await qc.fetchQuery(collectorsQuery(orgId));

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { FlaskConical, Loader2, Trash2 } from "lucide-react";
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Configurações — LogSentinel AI" }, { name: "description", content: "Organização, dados de demonstração e coletores." }, { property: "og:title", content: "Configurações — LogSentinel AI" }, { property: "og:description", content: "Organização, dados de demonstração e coletores." }] }),
+  head: () => ({ meta: [{ title: "Configurações — LogSentinel AI" }, { name: "description", content: "Organização, dados de demonstração e coletores." }, { property: "og:title", content: "Configurações — LogSentinel AI" }, { property: "og:description", content: "Organização, dados de demonstração e coletores." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Settings,
 });
 
@@ -34,7 +34,7 @@ const FLUENT_LINUX = `[SERVICE]
     Match  *
     Path   /var/log/logsentinel-export/
 # Envie os arquivos gerados pela tela "Ingestão de logs".
-# A API de ingestão contínua chega na Fase 2.`;
+# Para coleta contínua, gere a configuração em Agentes e Coletores.`;
 
 const FLUENT_WIN = `[INPUT]
     Name         winevtlog
@@ -93,7 +93,8 @@ function Settings() {
         </div>
         <div className="rounded-lg border bg-card p-5 lg:col-span-2">
           <h3 className="font-semibold">Coletores (Fluent Bit)</h3>
-          <p className="mt-1 text-sm text-muted-foreground">Exemplos de configuração para preparar a coleta nos servidores. No MVP, os arquivos coletados são enviados pela tela de ingestão; a API contínua com chaves por fonte está prevista para a próxima fase.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Exportação manual de arquivos. Para coleta contínua autenticada, use uma configuração vinculada ao servidor e à organização.</p>
+          <Button asChild variant="outline" className="mt-3"><Link to="/collectors">Agentes e Coletores</Link></Button>
           <Tabs defaultValue="linux" className="mt-3">
             <TabsList><TabsTrigger value="linux">Linux</TabsTrigger><TabsTrigger value="win">Windows</TabsTrigger></TabsList>
             <TabsContent value="linux"><pre className="overflow-x-auto rounded bg-sidebar p-4 font-mono text-xs">{FLUENT_LINUX}</pre></TabsContent>
