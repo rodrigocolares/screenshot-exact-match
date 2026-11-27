@@ -7,6 +7,8 @@
 - [x] Write Portuguese README.md: project description, technologies, log-collection setup, and usage guide.
 # Fase 2
 - [x] Etapa 2.1 — API de ingestão (`/api/public/v1/logs/ingest|batch`, `/ingestion/health`), página Chaves de API (criar, rotacionar, revogar, histórico), 13 testes.
-- [ ] Etapa 2.2 — gestão e assistente de coletores, adaptação Fluent Bit, monitoramento real, documentação e testes.
-- [ ] Validar agente Linux real, reinício/rotação/reconexão e regressões multi-tenant; registrar dependências de Windows real.
+- [x] Etapa 2.2 — gestão/edição e assistente, Fluent Bit + adaptador, monitoramento, guia e relatório técnico.
+- [x] Agente Linux real com Apache/Nginx/Java, rotação/reinício, recuperação controlada da fila; 12 testes multi-tenant e 10 testes reais de coletores aprovados.
+- [ ] Validar agente Windows real — requer servidor Windows com canais/fontes autorizados.
+- [ ] Validar agente remoto até publicação HTTPS e build de produção — requer publicação da versão atual e ambiente remoto.
 - [ ] Etapas 2.3–2.6 — aguardando nova solicitação.

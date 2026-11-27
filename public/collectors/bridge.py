@@ -14,12 +14,18 @@ import time
 import urllib.error
 import urllib.request
 import uuid
+from urllib.parse import urlparse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 MAX_BYTES = 1024 * 1024
 MAX_EVENTS = 1000
 MAX_SPOOL = 512 * 1024 * 1024
+
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
 
 
 def encode(value):
@@ -133,7 +139,7 @@ class Bridge:
             return 401, {}, 60
         req = urllib.request.Request(self.config["endpoint"], data=body, headers={"Content-Type": "application/json", "Authorization": "Bearer " + key})
         try:
-            with urllib.request.urlopen(req, timeout=30) as response:
+            with urllib.request.build_opener(NoRedirect).open(req, timeout=30) as response:
                 return response.status, json.load(response), 0
         except urllib.error.HTTPError as error:
             return error.code, {}, max(60, int(error.headers.get("Retry-After", "60")))
@@ -192,7 +198,8 @@ def main():
     parser.add_argument("--state", required=True)
     args = parser.parse_args()
     config = json.loads(Path(args.config).read_text(encoding="utf-8"))
-    if not config["endpoint"].startswith("https://"):
+    endpoint = urlparse(config["endpoint"])
+    if endpoint.scheme != "https" or not endpoint.hostname or endpoint.username or endpoint.password or endpoint.query or endpoint.fragment:
         parser.error("HTTPS endpoint required")
     bridge = Bridge(config, args.state)
 

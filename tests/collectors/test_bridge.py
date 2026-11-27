@@ -24,6 +24,9 @@ class BridgeTests(unittest.TestCase):
         self.assertEqual(sum(len(b["events"]) for b in batches), 1200)
         self.assertTrue(all(len(bridge.encode(b)) <= 1048576 and len(b["events"]) <= 1000 for b in batches))
 
+    def test_credentials_are_never_forwarded_by_redirect(self):
+        self.assertIsNone(bridge.NoRedirect().redirect_request(None, None, 302, "redirect", {}, "https://other.test"))
+
     def test_network_failure_and_restart_preserve_batch(self):
         self.adapter.enqueue("source", [{"log": "real file input", "collected_at": "2026-11-22T03:00:00Z"}])
         self.adapter.send = lambda body: (503, {}, 5)

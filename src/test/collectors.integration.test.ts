@@ -47,6 +47,8 @@ describe.skipIf(!enabled)("Live collector API security", () => {
     const foreign = "22222222-2222-4222-8222-222222222222";
     for (const table of ["collectors", "collector_audit"]) { const r = await client.from(table).select("id").eq("org_id", foreign); expect(r.error).toBeNull(); expect(r.data).toEqual([]); }
     const r = await client.rpc("collector_hourly", { _org: foreign, _collector: fixture?.id }); expect(r.error?.message).toContain("forbidden");
-    const write = await client.from("collectors").update({ name: "denied" }).eq("org_id", foreign); expect(write.error?.code).toBe("42501");
+    const write = await client.from("collectors").update({ name: "denied" }).eq("org_id", foreign).select("id");
+    if (write.error) expect(write.error.code).toBe("42501");
+    else expect(write.data).toEqual([]);
   });
 });

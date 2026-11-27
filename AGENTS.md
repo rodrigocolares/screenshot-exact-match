@@ -40,3 +40,4 @@ use the editor.
 - Collectors use Fluent Bit plus the loopback Python adapter with a durable SQLite spool and the existing ingestion API; this bridges Fluent Bit arrays to bounded authenticated envelopes without a parallel external API.
 - Collector configuration writes go through an admin-authorized server function and database binding trigger; generated files contain no credentials and heartbeat is sent only after probing the real Fluent Bit health endpoint.
 - Collector delivery counters update atomically through a service-only RPC, while API batch completion evaluates existing alert rules through a database trigger; membership-checked hourly RPCs preserve tenant isolation.
+- Endpoint verification forwards credentials only through an admin-authorized server function to project-owned HTTPS origins, and the local adapter refuses redirects; this prevents credential leakage to arbitrary hosts.
